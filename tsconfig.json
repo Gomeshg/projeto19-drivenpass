@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "outDir": "dist",
+        "esModuleInterop": true,
+        "module": "ES6",
+        "moduleResolution": "Node"
+    },
+    "ts-node": {
+        "esm": true
+    },
+    "include": ["node_modules/typescript/lib/lib.d.ts"]
+}
