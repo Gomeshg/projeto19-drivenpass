@@ -1,28 +1,34 @@
-type UserType = {
-    id?: Number,
-    email: String,
-    password: String
-}
+export type UserType = {
+  id?: number;
+  email: string;
+  password: string;
+};
 
-type SessionType = {
-    id?: Number,
-    userId: Number,
-    token: String
-}
+export type SessionType = {
+  id?: number;
+  userId: number;
+  token: string;
+};
 
-type CredentialType = {
-    id?: Number,
-    title: String,
-    url: String,
-    username: String,
-    password: String,
-    userId: Number
-}
+export type CredentialType = {
+  id?: number;
+  title: string;
+  url: string;
+  username: string;
+  password: string;
+  userId: number;
+};
 
-type NetworkType = {
-    id?: Number,
-    title: String,
-    network: String,
-    password: String,
-    userId: Number
-}
+export type NetworkType = {
+  id?: number;
+  title: string;
+  network: string;
+  password: string;
+  userId: number;
+};
+
+export type ApplicationError = {
+  name: string;
+  message: string;
+  status: number;
+};
