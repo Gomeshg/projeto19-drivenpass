@@ -8,21 +8,9 @@ async function signUp(req: Request, res: Response) {
 
   try {
     await userService.insertUser(newUser);
-    return res.status(201).send("User created sucessfully");
+    return res.status(status.CREATED).send("User created sucessfully");
   } catch (error) {
     switch (error.name) {
-      // case status["400_NAME"]:
-      //   return res.status(status.BAD_REQUEST).send(error.message);
-      //   break;
-
-      // case status["401_NAME"]:
-      //   return res.status(status.UNAUTHORIZED).send(error.message);
-      //   break;
-
-      // case status["404_NAME"]:
-      //   return res.status(status.NOT_FOUND).send(error.message);
-      //   break;
-
       case "ConflictError":
         return res.status(status.CONFLICT).send(error.message);
         break;
@@ -34,9 +22,35 @@ async function signUp(req: Request, res: Response) {
 }
 
 async function signIn(req: Request, res: Response) {
-  return res.status(200).send("Show de bolinhas!");
+  const user = req.body as UserType;
+
+  try {
+    const session = await userService.loginUser(user);
+
+    return res
+      .status(status.OK)
+      .send({ feedback: "Login efetuado com sucesso!", token: session.token });
+  } catch (error) {
+    switch (error.name) {
+      case "UnauthorizedError":
+        return res.status(status.UNAUTHORIZED).send(error.message);
+        break;
+      default:
+        return res.sendStatus(status.INTERNAL_SERVER_ERROR);
+    }
+  }
 }
 
 export { signUp, signIn };
 
-// bcrypt.compareSync(password, user.password)
+// case status["400_NAME"]:
+//   return res.status(status.BAD_REQUEST).send(error.message);
+//   break;
+
+// case status["401_NAME"]:
+//   return res.status(status.UNAUTHORIZED).send(error.message);
+//   break;
+
+// case status["404_NAME"]:
+//   return res.status(status.NOT_FOUND).send(error.message);
+//   break;

@@ -1,10 +1,16 @@
 import prisma from "../database/database.js";
 
-async function insert(token: string, userId: number) {
-  return prisma.session.create({
-    data: {
+async function createSession(token: string, userId: number) {
+  return prisma.session.upsert({
+    where: {
+      userId: userId,
+    },
+    create: {
       token: token,
       userId: userId,
+    },
+    update: {
+      token: token,
     },
     select: {
       token: true,
@@ -12,7 +18,7 @@ async function insert(token: string, userId: number) {
   });
 }
 
-async function search(token: string) {
+async function searchSession(token: string | undefined) {
   return prisma.session.findUnique({
     where: {
       token: token,
@@ -21,8 +27,8 @@ async function search(token: string) {
 }
 
 const sessionRepository = {
-  insert,
-  search,
+  createSession,
+  searchSession,
 };
 
 export default sessionRepository;

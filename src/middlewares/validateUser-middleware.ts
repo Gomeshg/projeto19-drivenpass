@@ -1,10 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { ObjectSchema } from "joi";
 import { userSchema } from "../schema/auth-schema.js";
 import { UserType } from "../protocols/types.js";
 import status from "http-status";
 
-export default function validateBody(
+export default function validateUser(
   req: Request,
   res: Response,
   next: NextFunction
