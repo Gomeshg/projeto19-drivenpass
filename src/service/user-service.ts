@@ -33,7 +33,7 @@ async function loginUser({ email, password }: UserType) {
     expiresIn: fourHours,
   });
 
-  return sessionRepository.createSession(token, user.id);
+  return sessionRepository.createSession({ token: token, userId: user.id });
 }
 
 const userService = {

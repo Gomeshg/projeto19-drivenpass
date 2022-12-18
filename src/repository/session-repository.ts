@@ -1,6 +1,7 @@
 import prisma from "../database/database.js";
+import { SessionType } from "../protocols/types.js";
 
-async function createSession(token: string, userId: number) {
+async function createSession({ token, userId }: SessionType) {
   return prisma.session.upsert({
     where: {
       userId: userId,

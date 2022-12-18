@@ -10,17 +10,31 @@ export default async function authToken(
   next: NextFunction
 ) {
   const authorization = req.headers?.authorization;
-  const token = authorization?.split(" ")[1] as string;
+  const token = authorization?.split(" ")[1];
+
+  if (!token) {
+    return res.sendStatus(status.BAD_REQUEST);
+  }
 
   try {
-    const isValidToken = await sessionRepository.searchSession(token);
+    const thereIsToken = await sessionRepository.searchSession(token);
 
-    if (isValidToken) {
-      next();
+    if (thereIsToken) {
+      const isValidToken = jwt.verify(token, secretKey);
+
+      if (isValidToken) {
+        res.locals.userId = thereIsToken.userId;
+        next();
+      } else {
+        return res.sendStatus(status.UNAUTHORIZED);
+      }
     } else {
       return res.sendStatus(status.UNAUTHORIZED);
     }
-  } catch {
+  } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      return res.sendStatus(status.UNAUTHORIZED);
+    }
     return res.sendStatus(status.INTERNAL_SERVER_ERROR);
   }
 }
