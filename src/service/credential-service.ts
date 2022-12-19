@@ -1,12 +1,15 @@
 import credentialRepository from "../repository/credential-repository.js";
-import { CredentialType } from "../protocols/types.js";
-import { conflictError, unauthorizedError } from "../erros/index-errors.js";
+import { CredentialType, CredentialUpdateType } from "../protocols/types.js";
+import {
+  conflictError,
+  unauthorizedError,
+  notFoundError,
+} from "../erros/index-errors.js";
 import Cryptr from "cryptr";
 import { secretKey } from "../protocols/secretKey.js";
+const cryptr = new Cryptr(secretKey);
 
 async function createCredential(newCredential: CredentialType) {
-  const cryptr = new Cryptr(secretKey);
-
   const credentialFiltredByUrl =
     await credentialRepository.filterCredentialsByUrl(
       newCredential.userId,
@@ -16,20 +19,120 @@ async function createCredential(newCredential: CredentialType) {
     throw conflictError("Url limited exceeded");
   }
 
-  const titleAlredyUsed = await credentialRepository.findOneCredentiaByTitle(
+  const titleAlreadyUsed = await credentialRepository.findOneCredentiaByTitle(
     newCredential.userId,
     newCredential.title
   );
-  if (titleAlredyUsed) {
-    throw conflictError("Title alredy used");
+  if (titleAlreadyUsed) {
+    throw conflictError("Title already used");
   }
 
   newCredential.password = cryptr.encrypt(newCredential.password);
   return credentialRepository.createCredential(newCredential);
 }
 
+async function findOneCredential(userId: number, id: number) {
+  const thereIsCredential = await credentialRepository.findOneCredentialById(
+    id
+  );
+  if (!thereIsCredential) {
+    throw notFoundError();
+  }
+
+  const credentialBelongsUser =
+    await credentialRepository.findOneCredentialById(id);
+
+  if (credentialBelongsUser?.userId !== userId) {
+    throw unauthorizedError();
+  }
+
+  return credentialRepository.findOneCredentialById(id);
+}
+
+async function findAllCredentials(userId: number) {
+  const allCredentials = await credentialRepository.findAllCredentials(userId);
+
+  const allCredentialsDescrypt = allCredentials.map((item) => {
+    item.password = cryptr.decrypt(item.password);
+    return item;
+  });
+
+  return allCredentialsDescrypt;
+}
+
+async function deleteCredential(userId: number, id: number) {
+  const thereIsCredential = await credentialRepository.findOneCredentialById(
+    id
+  );
+  if (!thereIsCredential) {
+    throw notFoundError();
+  }
+
+  const credentialBelongsUser =
+    await credentialRepository.findOneCredentialById(id);
+
+  if (credentialBelongsUser?.userId !== userId) {
+    throw unauthorizedError();
+  }
+
+  return credentialRepository.deleteCredential(userId, id);
+}
+
+async function updateCredential(
+  userId: number,
+  id: number,
+  credentialUpdated: CredentialUpdateType
+) {
+  const thereIsCredential = await credentialRepository.findOneCredentialById(
+    id
+  );
+  if (!thereIsCredential) {
+    throw notFoundError();
+  }
+
+  const credentialBelongsUser =
+    await credentialRepository.findOneCredentialById(id);
+
+  if (credentialBelongsUser?.userId !== userId) {
+    throw unauthorizedError();
+  }
+
+  if (credentialUpdated.url) {
+    const credentialFiltredByUrl =
+      await credentialRepository.filterCredentialsByUrl(
+        userId,
+        credentialUpdated.url as string
+      );
+    if (credentialFiltredByUrl.length >= 2) {
+      throw conflictError("Url limited exceeded");
+    }
+  }
+
+  if (credentialUpdated.title) {
+    const titleAlreadyUsed = await credentialRepository.findOneCredentiaByTitle(
+      userId,
+      credentialUpdated.title as string
+    );
+    if (titleAlreadyUsed) {
+      throw conflictError("Title already used");
+    }
+  }
+
+  if (credentialUpdated.password) {
+    credentialUpdated.password = cryptr.encrypt(
+      credentialUpdated.password as string
+    );
+  }
+
+  return credentialRepository.updateCredential(userId, id, credentialUpdated);
+}
+
 const credentialService = {
   createCredential,
+  findOneCredential,
+  findAllCredentials,
+  deleteCredential,
+  updateCredential,
 };
 
 export default credentialService;

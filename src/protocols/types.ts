@@ -19,6 +19,13 @@ export type CredentialType = {
   userId: number;
 };
 
+export type CredentialUpdateType = {
+  title?: string;
+  url?: string;
+  username?: string;
+  password?: string;
+};
+
 export type NetworkType = {
   id?: number;
   title: string;

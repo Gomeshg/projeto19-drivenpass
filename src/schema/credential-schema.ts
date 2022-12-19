@@ -8,4 +8,11 @@ const credentialSchema = joi.object({
   userId: joi.number().integer().required(),
 });
 
-export { credentialSchema };
+const credentialUpdateSchema = joi.object({
+  title: joi.string(),
+  url: joi.string().uri(),
+  username: joi.string(),
+  password: joi.string(),
+});
+
+export { credentialSchema, credentialUpdateSchema };

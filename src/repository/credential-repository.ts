@@ -1,5 +1,5 @@
 import prisma from "../database/database.js";
-import { CredentialType } from "../protocols/types.js";
+import { CredentialType, CredentialUpdateType } from "../protocols/types.js";
 
 async function createCredential(newCredential: CredentialType) {
   return prisma.credential.create({
@@ -15,11 +15,10 @@ async function findAllCredentials(userId: number) {
   });
 }
 
-async function findOneCredentialById(userId: number, id: number) {
+async function findOneCredentialById(id: number) {
   return prisma.credential.findFirst({
     where: {
       id: id,
-      userId: userId,
     },
   });
 }
@@ -51,13 +50,17 @@ async function deleteCredential(userId: number, id: number) {
   });
 }
 
-async function updateCredential(userId: number, id: number, data: object) {
+async function updateCredential(
+  userId: number,
+  id: number,
+  credentialUpdated: CredentialUpdateType
+) {
   return prisma.credential.updateMany({
     where: {
       id: id,
       userId: userId,
     },
-    data: data,
+    data: credentialUpdated,
   });
 }
 
