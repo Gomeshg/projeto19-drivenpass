@@ -9,7 +9,7 @@ import Cryptr from "cryptr";
 import { secretKey } from "../protocols/secretKey.js";
 const cryptr = new Cryptr(secretKey);
 
-async function createCredential(newCredential: CredentialType) {
+async function createCredential(newCredential: CredentialType): Promise<void> {
   const credentialFiltredByUrl =
     await credentialRepository.filterCredentialsByUrl(
       newCredential.userId,
@@ -28,10 +28,13 @@ async function createCredential(newCredential: CredentialType) {
   }
 
   newCredential.password = cryptr.encrypt(newCredential.password);
-  return credentialRepository.createCredential(newCredential);
+  await credentialRepository.createCredential(newCredential);
 }
 
-async function findOneCredential(userId: number, id: number) {
+async function findOneCredential(
+  userId: number,
+  id: number
+): Promise<CredentialType | null> {
   const thereIsCredential = await credentialRepository.findOneCredentialById(
     id
   );
@@ -49,7 +52,7 @@ async function findOneCredential(userId: number, id: number) {
   return credentialRepository.findOneCredentialById(id);
 }
 
-async function findAllCredentials(userId: number) {
+async function findAllCredentials(userId: number): Promise<CredentialType[]> {
   const allCredentials = await credentialRepository.findAllCredentials(userId);
 
   const allCredentialsDescrypt = allCredentials.map((item) => {
@@ -60,7 +63,7 @@ async function findAllCredentials(userId: number) {
   return allCredentialsDescrypt;
 }
 
-async function deleteCredential(userId: number, id: number) {
+async function deleteCredential(userId: number, id: number): Promise<void> {
   const thereIsCredential = await credentialRepository.findOneCredentialById(
     id
   );
@@ -75,14 +78,14 @@ async function deleteCredential(userId: number, id: number) {
     throw unauthorizedError();
   }
 
-  return credentialRepository.deleteCredential(userId, id);
+  await credentialRepository.deleteCredential(userId, id);
 }
 
 async function updateCredential(
   userId: number,
   id: number,
   credentialUpdated: CredentialUpdateType
-) {
+): Promise<void> {
   const thereIsCredential = await credentialRepository.findOneCredentialById(
     id
   );
@@ -124,7 +127,7 @@ async function updateCredential(
     );
   }
 
-  return credentialRepository.updateCredential(userId, id, credentialUpdated);
+  await credentialRepository.updateCredential(userId, id, credentialUpdated);
 }
 
 const credentialService = {
