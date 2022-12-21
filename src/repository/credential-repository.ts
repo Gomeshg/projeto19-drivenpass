@@ -1,5 +1,7 @@
-import prisma from "../database/database.js";
-import { CredentialType, CredentialUpdateType } from "../protocols/types.js";
+// import prisma from "../database/database.js";
+// import { CredentialType, CredentialUpdateType } from "../protocols/types.js";
+import prisma from "../database/database";
+import { CredentialType, CredentialUpdateType } from "../protocols/types";
 
 async function createCredential(newCredential: CredentialType) {
   return prisma.credential.create({
@@ -16,7 +18,7 @@ async function findAllCredentials(userId: number) {
 }
 
 async function findOneCredentialById(id: number) {
-  return prisma.credential.findFirst({
+  return prisma.credential.findUnique({
     where: {
       id: id,
     },

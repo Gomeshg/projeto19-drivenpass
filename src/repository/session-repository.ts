@@ -1,5 +1,7 @@
-import prisma from "../database/database.js";
-import { SessionType } from "../protocols/types.js";
+// import prisma from "../database/database.js";
+// import { SessionType } from "../protocols/types.js";
+import prisma from "../database/database";
+import { SessionType } from "../protocols/types";
 
 async function createSession({ token, userId }: SessionType) {
   return prisma.session.upsert({

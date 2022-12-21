@@ -1,10 +1,15 @@
-import userRepository from "../repository/user-repository.js";
-import sessionRepository from "../repository/session-repository.js";
-import { UserType } from "../protocols/types.js";
-import { conflictError, unauthorizedError } from "../erros/index-errors.js";
-import bcrypt from "bcrypt";
+// import userRepository from "../repository/user-repository.js";
+// import sessionRepository from "../repository/session-repository.js";
+// import { UserType } from "../protocols/types.js";
+// import { conflictError, unauthorizedError } from "../erros/index-errors.js";
+// import { secretKey, fourHours } from "../protocols/secretKey.js";
+import userRepository from "../repository/user-repository";
+import sessionRepository from "../repository/session-repository";
+import { UserType } from "../protocols/types";
+import { conflictError, unauthorizedError } from "../erros/index-errors";
+import { secretKey, fourHours } from "../protocols/secretKey";
 import jwt from "jsonwebtoken";
-import { secretKey, fourHours } from "../protocols/secretKey.js";
+import bcrypt from "bcrypt";
 
 async function insertUser({ email, password }: UserType) {
   const hashedPassword = await bcrypt.hash(password, 12);

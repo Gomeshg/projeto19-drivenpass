@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import status from "http-status";
-import { CredentialType, CredentialUpdateType } from "../protocols/types.js";
-import credentialService from "../service/credential-service.js";
+// import { CredentialType, CredentialUpdateType } from "../protocols/types.js";
+// import credentialService from "../service/credential-service.js";
+import { CredentialType, CredentialUpdateType } from "../protocols/types";
+import credentialService from "../service/credential-service";
 
 async function postOneCredential(req: Request, res: Response) {
   const userId = res.locals.userId as number;
@@ -21,7 +23,7 @@ async function postOneCredential(req: Request, res: Response) {
 
 async function getOneCredential(req: Request, res: Response) {
   const userId = res.locals.userId as number;
-  const credentialId = res.locals.credentialId as number;
+  const credentialId = res.locals.id as number;
 
   try {
     const credential = await credentialService.findOneCredential(
@@ -54,7 +56,7 @@ async function getAllCredentials(req: Request, res: Response) {
 
 async function deleteOneCredential(req: Request, res: Response) {
   const userId = res.locals.userId as number;
-  const credentialId = res.locals.credentialId as number;
+  const credentialId = res.locals.id as number;
 
   try {
     await credentialService.deleteCredential(userId, credentialId);
@@ -72,7 +74,7 @@ async function deleteOneCredential(req: Request, res: Response) {
 
 async function updateOneCredential(req: Request, res: Response) {
   const userId = res.locals.userId as number;
-  const credentialId = res.locals.credentialId as number;
+  const credentialId = res.locals.id as number;
   const credentialUpdated = req.body as CredentialUpdateType;
 
   try {

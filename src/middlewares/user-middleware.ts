@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { userSchema } from "../schema/auth-schema.js";
-import { UserType } from "../protocols/types.js";
+// import { userSchema } from "../schema/auth-schema.js";
+// import { UserType } from "../protocols/types.js";
+import { userSchema } from "../schema/auth-schema";
+import { UserType } from "../protocols/types";
 import status from "http-status";
 
 export default function validateUser(

@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import sessionRepository from "../repository/session-repository.js";
-import { secretKey } from "../protocols/secretKey.js";
+// import sessionRepository from "../repository/session-repository.js";
+// import { secretKey } from "../protocols/secretKey.js";
+import sessionRepository from "../repository/session-repository";
+import { secretKey } from "../protocols/secretKey";
 import jwt from "jsonwebtoken";
 import status from "http-status";
 

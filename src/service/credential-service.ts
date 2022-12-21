@@ -1,12 +1,21 @@
-import credentialRepository from "../repository/credential-repository.js";
-import { CredentialType, CredentialUpdateType } from "../protocols/types.js";
+// import credentialRepository from "../repository/credential-repository.js";
+// import { CredentialType, CredentialUpdateType } from "../protocols/types.js";
+// import {
+//   conflictError,
+//   unauthorizedError,
+//   notFoundError,
+// } from "../erros/index-errors.js";
+// import { secretKey } from "../protocols/secretKey.js";
+import credentialRepository from "../repository/credential-repository";
+import { CredentialType, CredentialUpdateType } from "../protocols/types";
 import {
   conflictError,
   unauthorizedError,
   notFoundError,
-} from "../erros/index-errors.js";
+} from "../erros/index-errors";
+import { secretKey } from "../protocols/secretKey";
+
 import Cryptr from "cryptr";
-import { secretKey } from "../protocols/secretKey.js";
 const cryptr = new Cryptr(secretKey);
 
 async function createCredential(newCredential: CredentialType): Promise<void> {
@@ -49,7 +58,11 @@ async function findOneCredential(
     throw unauthorizedError();
   }
 
-  return credentialRepository.findOneCredentialById(id);
+  const credential = await credentialRepository.findOneCredentialById(id);
+  if (credential) {
+    credential.password = cryptr.decrypt(credential.password);
+  }
+  return credential;
 }
 
 async function findAllCredentials(userId: number): Promise<CredentialType[]> {

@@ -34,6 +34,12 @@ export type NetworkType = {
   userId: number;
 };
 
+export type NetworkUpdateType = {
+  title?: string;
+  network?: string;
+  password?: string;
+};
+
 export type ApplicationError = {
   name: string;
   message: string;

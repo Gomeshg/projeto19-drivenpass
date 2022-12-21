@@ -1,4 +1,4 @@
-import { ApplicationError } from "../protocols/types.js";
+import { ApplicationError } from "../protocols/types";
 
 export function conflictError(message: string): ApplicationError {
   return {

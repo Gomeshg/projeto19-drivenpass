@@ -1,17 +1,16 @@
 import { NextFunction, Request, Response } from "express";
-import { CredentialType } from "../protocols/types.js";
 import status from "http-status";
 
-export default function validateCredentialID(
+export default function validateID(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  const credentialId = Number(req.params.id);
-  if (!credentialId) {
+  const id = Number(req.params.id);
+  if (!id) {
     return res.sendStatus(status.BAD_REQUEST);
   }
 
-  res.locals.credentialId = credentialId;
+  res.locals.id = id;
   next();
 }

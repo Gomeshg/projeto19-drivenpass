@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { credentialUpdateSchema } from "../schema/credential-schema.js";
-import { CredentialUpdateType } from "../protocols/types.js";
+// import { credentialUpdateSchema } from "../schema/credential-schema.js";
+// import { CredentialUpdateType } from "../protocols/types.js";
+import { credentialUpdateSchema } from "../schema/credential-schema";
+import { CredentialUpdateType } from "../protocols/types";
 import status from "http-status";
 
 export default function validateCredential(

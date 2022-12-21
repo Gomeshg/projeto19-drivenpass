@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-// import { credentialSchema } from "../schema/credential-schema.js";
-// import { CredentialType } from "../protocols/types.js";
-import { credentialSchema } from "../schema/credential-schema";
-import { CredentialType } from "../protocols/types";
+// import { networkSchema } from "../schema/network-schema.js";
+// import { NetworkType } from "../protocols/types.js";
+import { networkSchema } from "../schema/network-schema";
+import { NetworkType } from "../protocols/types";
 import status from "http-status";
 
 export default function validateCredential(
@@ -11,8 +11,8 @@ export default function validateCredential(
   next: NextFunction
 ) {
   const userId = res.locals.userId as number;
-  const newCredential = { ...req.body, userId: userId } as CredentialType;
-  const { error } = credentialSchema.validate(newCredential, {
+  const newNetwork = { ...req.body, userId: userId } as NetworkType;
+  const { error } = networkSchema.validate(newNetwork, {
     abortEarly: false,
   });
   if (error) {

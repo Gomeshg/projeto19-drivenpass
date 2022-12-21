@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
-import userService from "../service/user-service.js";
-import { UserType } from "../protocols/types.js";
+// import userService from "../service/user-service.js";
+// import { UserType } from "../protocols/types.js";
+import userService from "../service/user-service";
+import { UserType } from "../protocols/types";
 import status from "http-status";
 
 async function signUp(req: Request, res: Response) {
