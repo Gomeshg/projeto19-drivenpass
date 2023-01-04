@@ -2,7 +2,7 @@ import { Router } from "express";
 // import authToken from "../middlewares/token-middleware.js";
 // import validateCredential from "../middlewares/post-credential-middlware.js";
 // import validateID from "../middlewares/id-middleware.js";
-// import valiteUpdateCredential from "../middlewares/update-credential-middleware.js";
+// import validateUpdateCredential from "../middlewares/update-credential-middleware.js";
 // import {
 //   postOneCredential,
 //   getOneCredential,
@@ -13,7 +13,7 @@ import { Router } from "express";
 import authToken from "../middlewares/token-middleware";
 import validateCredential from "../middlewares/post-credential-middlware";
 import validateID from "../middlewares/id-middleware";
-import valiteUpdateCredential from "../middlewares/update-credential-middleware";
+import validateUpdateCredential from "../middlewares/update-credential-middleware";
 import {
   postOneCredential,
   getOneCredential,
@@ -51,7 +51,7 @@ credentialRouter.put(
   "/credential/:id",
   authToken,
   validateID,
-  valiteUpdateCredential,
+  validateUpdateCredential,
   updateOneCredential
 );
 
