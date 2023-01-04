@@ -8,6 +8,24 @@ export function createCredential(userId: number) {
   });
 }
 
+export function createSpecificCredential(
+  userId: number,
+  title: string,
+  url: string
+) {
+  const credential = newCredential(userId);
+  if (title) {
+    credential.title = title;
+  }
+  if (url) {
+    credential.url = url;
+  }
+
+  return prisma.credential.create({
+    data: credential,
+  });
+}
+
 export function getCredential(userId: number) {
   return prisma.credential.findMany({
     where: {

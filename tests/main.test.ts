@@ -3,6 +3,8 @@ import supertest from "supertest";
 import server from "../src/main";
 import prisma from "../src/database/database";
 import {
+  UserType,
+  SessionType,
   CredentialType,
   CredentialUpdateType,
   NetworkType,
@@ -11,7 +13,11 @@ import {
 
 import createUser from "./factories/user";
 import createSession from "./factories/session";
-import { createCredential, getCredential } from "./factories/credential";
+import {
+  createCredential,
+  createSpecificCredential,
+  getCredential,
+} from "./factories/credential";
 import { createNetwork } from "../tests/factories/network";
 import jwt from "jsonwebtoken";
 import { secretKey, oneSecond, fourHours } from "../src/protocols/secretKey";
@@ -234,6 +240,57 @@ describe("POST / credential", () => {
     expect(result.status).toBe(status.UNAUTHORIZED);
   });
 
+  it("Test case: 409 | title already used", async () => {
+    const createdUser: UserType = await createUser(EMAIL, PASSWORD);
+    const token = createToken(createdUser.id as number, fourHours);
+    const session: SessionType = await createSession(
+      createdUser.id as number,
+      token
+    );
+
+    const credential: CredentialType = await createCredential(
+      createdUser.id as number
+    );
+
+    delete credential.id;
+
+    const result = await api
+      .post("/credential")
+      .set("Authorization", `Bearer ${session.token}`)
+      .send(credential);
+
+    expect(result.status).toBe(status.CONFLICT);
+  });
+
+  it("Test case: 409 | url limited exceeded", async () => {
+    const createdUser: UserType = await createUser(EMAIL, PASSWORD);
+    const token = createToken(createdUser.id as number, fourHours);
+    const session: SessionType = await createSession(
+      createdUser.id as number,
+      token
+    );
+
+    for (let i = 0; i < 2; i++) {
+      await createSpecificCredential(
+        createdUser.id as number,
+        `titulo${i + 1}`,
+        "https://beta.openai.com/playground"
+      );
+    }
+
+    const result = await api
+      .post("/credential")
+      .set("Authorization", `Bearer ${session.token}`)
+      .send({
+        title: "titulo3",
+        url: "https://beta.openai.com/playground",
+        username: "nome",
+        password: "senha",
+      });
+
+    expect(result.status).toBe(status.CONFLICT);
+  });
+
   it("Test case: 201 | sucessfully", async () => {
     const createdUser = await createUser(EMAIL, PASSWORD);
     const token = jwt.sign({ userId: createdUser.id }, secretKey, {
@@ -334,7 +391,7 @@ describe("GET / credential", () => {
     expect(result.status).toBe(status.BAD_REQUEST);
   });
 
-  it("Test case 400 - getOne | non-existent credential", async () => {
+  it("Test case 404 - getOne | non-existent credential", async () => {
     const createdUser = await createUser(EMAIL, PASSWORD);
     const token = createToken(createdUser.id, fourHours);
     const session = await createSession(createdUser.id, token);
@@ -344,6 +401,30 @@ describe("GET / credential", () => {
       .set("Authorization", `Bearer ${session.token}`);
 
     expect(result.status).toBe(status.NOT_FOUND);
+  });
+
+  it("Test case 401 - getOne | credential belongs other user", async () => {
+    const createdUser: UserType = await createUser(EMAIL, PASSWORD);
+    const token = createToken(createdUser.id as number, fourHours);
+    const session: SessionType = await createSession(
+      createdUser.id as number,
+      token
+    );
+
+    const auxUser: UserType = await createUser(
+      "usuarioaxuliar@gmail.com",
+      "senhadousuario"
+    );
+
+    const createdCredentialFromAuxUser: CredentialType = await createCredential(
+      auxUser.id as number
+    );
+
+    const result = await api
+      .get(`/credential/${createdCredentialFromAuxUser.id}`)
+      .set("Authorization", `Bearer ${session.token}`);
+
+    expect(result.status).toBe(status.UNAUTHORIZED);
   });
 
   it("Test case 400 - getOne | non-existent token", async () => {
@@ -465,7 +546,7 @@ describe("DELETE /credential", () => {
     expect(result.status).toBe(status.BAD_REQUEST);
   });
 
-  it("Test case 400 | non-existent credential", async () => {
+  it("Test case 404 | non-existent credential", async () => {
     const createdUser = await createUser(EMAIL, PASSWORD);
     const token = createToken(createdUser.id, fourHours);
     const session = await createSession(createdUser.id, token);
@@ -475,6 +556,30 @@ describe("DELETE /credential", () => {
       .set("Authorization", `Bearer ${session.token}`);
 
     expect(result.status).toBe(status.NOT_FOUND);
+  });
+
+  it("Test case 401 | credential belongs other user", async () => {
+    const createdUser: UserType = await createUser(EMAIL, PASSWORD);
+    const token = createToken(createdUser.id as number, fourHours);
+    const session: SessionType = await createSession(
+      createdUser.id as number,
+      token
+    );
+
+    const auxUser: UserType = await createUser(
+      "usuarioaxuliar@gmail.com",
+      "senhadousuario"
+    );
+
+    const createdCredentialFromAuxUser: CredentialType = await createCredential(
+      auxUser.id as number
+    );
+
+    const result = await api
+      .delete(`/credential/${createdCredentialFromAuxUser.id}`)
+      .set("Authorization", `Bearer ${session.token}`);
+
+    expect(result.status).toBe(status.UNAUTHORIZED);
   });
 
   it("Test case 200 | sucessfully", async () => {
@@ -560,7 +665,7 @@ describe("UPDATE /credential", () => {
     expect(result.status).toBe(status.BAD_REQUEST);
   });
 
-  it("Test case 400 | non-existent credential", async () => {
+  it("Test case 404 | non-existent credential", async () => {
     const createdUser = await createUser(EMAIL, PASSWORD);
     const token = createToken(createdUser.id, fourHours);
     const session = await createSession(createdUser.id, token);
@@ -571,6 +676,87 @@ describe("UPDATE /credential", () => {
       .send({});
 
     expect(result.status).toBe(status.NOT_FOUND);
+  });
+
+  it("Test case 401 | credential belongs other user", async () => {
+    const createdUser: UserType = await createUser(EMAIL, PASSWORD);
+    const token = createToken(createdUser.id as number, fourHours);
+    const session: SessionType = await createSession(
+      createdUser.id as number,
+      token
+    );
+
+    const auxUser: UserType = await createUser(
+      "usuarioaxuliar@gmail.com",
+      "senhadousuario"
+    );
+
+    const createdCredentialFromAuxUser: CredentialType = await createCredential(
+      auxUser.id as number
+    );
+
+    const result = await api
+      .put(`/credential/${createdCredentialFromAuxUser.id}`)
+      .set("Authorization", `Bearer ${session.token}`)
+      .send({});
+
+    expect(result.status).toBe(status.UNAUTHORIZED);
+  });
+
+  it("Test case: 409 | title already used", async () => {
+    const createdUser: UserType = await createUser(EMAIL, PASSWORD);
+    const token = createToken(createdUser.id as number, fourHours);
+    const session: SessionType = await createSession(
+      createdUser.id as number,
+      token
+    );
+
+    const credential1: CredentialType = await createCredential(
+      createdUser.id as number
+    );
+
+    const credential2: CredentialType = await createCredential(
+      createdUser.id as number
+    );
+
+    const result = await api
+      .put(`/credential/${credential2.id}`)
+      .set("Authorization", `Bearer ${session.token}`)
+      .send({ title: credential1.title });
+
+    expect(result.status).toBe(status.CONFLICT);
+  });
+
+  it("Test case: 409 | url limited exceeded", async () => {
+    const createdUser: UserType = await createUser(EMAIL, PASSWORD);
+    const token = createToken(createdUser.id as number, fourHours);
+    const session: SessionType = await createSession(
+      createdUser.id as number,
+      token
+    );
+
+    for (let i = 0; i < 2; i++) {
+      await createSpecificCredential(
+        createdUser.id as number,
+        `titulo${i + 1}`,
+        "https://beta.openai.com/playground"
+      );
+    }
+
+    const credential3: CredentialType = await createSpecificCredential(
+      createdUser.id as number,
+      `titulo3`,
+      "https://www.youtube.com/"
+    );
+
+    const result = await api
+      .put(`/credential/${credential3.id}`)
+      .set("Authorization", `Bearer ${session.token}`)
+      .send({
+        url: "https://beta.openai.com/playground",
+      });
+
+    expect(result.status).toBe(status.CONFLICT);
   });
 
   it("Test case 200 | sucessfully", async () => {
@@ -745,7 +931,7 @@ describe("GET /network", () => {
     expect(result.status).toBe(status.UNAUTHORIZED);
   });
 
-  it("Test case 201 - getAll | sucessfully ", async () => {
+  it("Test case 200 - getAll | sucessfully ", async () => {
     const createdUser = await createUser(EMAIL, PASSWORD);
     const token = createToken(createdUser.id, fourHours);
     const session = await createSession(createdUser.id, token);
@@ -817,7 +1003,7 @@ describe("GET /network", () => {
     const token = createToken(createdUser.id, fourHours);
     const session = await createSession(createdUser.id, token);
 
-    const network = await createNetwork(createdUser.id);
+    await createNetwork(createdUser.id);
 
     const result = await api
       .get(`/network/1`)
@@ -826,7 +1012,31 @@ describe("GET /network", () => {
     expect(result.status).toBe(status.NOT_FOUND);
   });
 
-  it("Test case 201 - getOne | sucessfully ", async () => {
+  it("Test case 401 - getOne | network belongs other user", async () => {
+    const createdUser: UserType = await createUser(EMAIL, PASSWORD);
+    const token = createToken(createdUser.id as number, fourHours);
+    const session: SessionType = await createSession(
+      createdUser.id as number,
+      token
+    );
+
+    const auxUser: UserType = await createUser(
+      "usuarioaxuliar@gmail.com",
+      "senhadousuario"
+    );
+
+    const createdNetworkFromAuxUser: NetworkType = await createNetwork(
+      auxUser.id as number
+    );
+
+    const result = await api
+      .get(`/network/${createdNetworkFromAuxUser.id}`)
+      .set("Authorization", `Bearer ${session.token}`);
+
+    expect(result.status).toBe(status.UNAUTHORIZED);
+  });
+
+  it("Test case 200 - getOne | sucessfully ", async () => {
     const createdUser = await createUser(EMAIL, PASSWORD);
     const token = createToken(createdUser.id, fourHours);
     const session = await createSession(createdUser.id, token);
@@ -905,7 +1115,7 @@ describe("UPDATE /network", () => {
     expect(result.status).toBe(status.BAD_REQUEST);
   });
 
-  it("Test case 400 | non-existent network", async () => {
+  it("Test case 404 | non-existent network", async () => {
     const createdUser = await createUser(EMAIL, PASSWORD);
     const token = createToken(createdUser.id, fourHours);
     const session = await createSession(createdUser.id, token);
@@ -916,6 +1126,31 @@ describe("UPDATE /network", () => {
       .send({});
 
     expect(result.status).toBe(status.NOT_FOUND);
+  });
+
+  it("Test case 401 | network belongs other user", async () => {
+    const createdUser: UserType = await createUser(EMAIL, PASSWORD);
+    const token = createToken(createdUser.id as number, fourHours);
+    const session: SessionType = await createSession(
+      createdUser.id as number,
+      token
+    );
+
+    const auxUser: UserType = await createUser(
+      "usuarioaxuliar@gmail.com",
+      "senhadousuario"
+    );
+
+    const createdNetworkFromAuxUser: NetworkType = await createNetwork(
+      auxUser.id as number
+    );
+
+    const result = await api
+      .put(`/network/${createdNetworkFromAuxUser.id}`)
+      .set("Authorization", `Bearer ${session.token}`)
+      .send({});
+
+    expect(result.status).toBe(status.UNAUTHORIZED);
   });
 
   it("Test case 200 | sucessfully", async () => {
@@ -999,7 +1234,7 @@ describe("DELETE /network", () => {
     expect(result.status).toBe(status.BAD_REQUEST);
   });
 
-  it("Test case 400 | non-existent network", async () => {
+  it("Test case 404 | non-existent network", async () => {
     const createdUser = await createUser(EMAIL, PASSWORD);
     const token = createToken(createdUser.id, fourHours);
     const session = await createSession(createdUser.id, token);
@@ -1009,6 +1244,30 @@ describe("DELETE /network", () => {
       .set("Authorization", `Bearer ${session.token}`);
 
     expect(result.status).toBe(status.NOT_FOUND);
+  });
+
+  it("Test case 401 | network belongs other user", async () => {
+    const createdUser: UserType = await createUser(EMAIL, PASSWORD);
+    const token = createToken(createdUser.id as number, fourHours);
+    const session: SessionType = await createSession(
+      createdUser.id as number,
+      token
+    );
+
+    const auxUser: UserType = await createUser(
+      "usuarioaxuliar@gmail.com",
+      "senhadousuario"
+    );
+
+    const createdNetworkFromAuxUser: NetworkType = await createNetwork(
+      auxUser.id as number
+    );
+
+    const result = await api
+      .delete(`/network/${createdNetworkFromAuxUser.id}`)
+      .set("Authorization", `Bearer ${session.token}`);
+
+    expect(result.status).toBe(status.UNAUTHORIZED);
   });
 
   it("Test case 200 | sucessfully", async () => {

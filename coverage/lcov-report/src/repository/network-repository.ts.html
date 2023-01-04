@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">37.5% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>3/8</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>5/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">37.5% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>3/8</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -122,7 +122,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -130,7 +130,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -138,13 +138,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -152,7 +152,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -174,38 +174,38 @@
 import prisma from "../database/database";
 import { NetworkType, NetworkUpdateType } from "../protocols/types";
 &nbsp;
-async function <span class="fstat-no" title="function not covered" >findOneNetwork(</span>id: number): Promise&lt;NetworkType | null&gt; {
-<span class="cstat-no" title="statement not covered" >  return prisma.network.findUnique({</span>
+async function findOneNetwork(id: number): Promise&lt;NetworkType | null&gt; {
+  return prisma.network.findUnique({
     where: {
       id: id,
     },
   });
 }
 &nbsp;
-async function <span class="fstat-no" title="function not covered" >findAllNetwork(</span>userId: number): Promise&lt;NetworkType[]&gt; {
-<span class="cstat-no" title="statement not covered" >  return prisma.network.findMany({</span>
+async function findAllNetwork(userId: number): Promise&lt;NetworkType[]&gt; {
+  return prisma.network.findMany({
     where: {
       userId: userId,
     },
   });
 }
 &nbsp;
-async function <span class="fstat-no" title="function not covered" >createNetwork(</span>network: NetworkType) {
-<span class="cstat-no" title="statement not covered" >  return prisma.network.create({</span>
+async function createNetwork(network: NetworkType) {
+  return prisma.network.create({
     data: network,
   });
 }
 &nbsp;
-async function <span class="fstat-no" title="function not covered" >deleteNetwork(</span>id: number) {
-<span class="cstat-no" title="statement not covered" >  return prisma.network.delete({</span>
+async function deleteNetwork(id: number) {
+  return prisma.network.delete({
     where: {
       id: id,
     },
   });
 }
 &nbsp;
-async function <span class="fstat-no" title="function not covered" >updateNetwork(</span>id: number, networkUpdated: NetworkUpdateType) {
-<span class="cstat-no" title="statement not covered" >  return prisma.network.update({</span>
+async function updateNetwork(id: number, networkUpdated: NetworkUpdateType) {
+  return prisma.network.update({
     where: {
       id: id,
     },
@@ -229,7 +229,7 @@ export default networkRepository;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2022-12-30T15:30:42.726Z
+                at 2023-01-04T21:03:33.753Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
