@@ -7,11 +7,3 @@ export function createNetwork(userId: number) {
     data: network,
   });
 }
-
-export function getNetwork(userId: number) {
-  return prisma.network.findMany({
-    where: {
-      userId: userId,
-    },
-  });
-}

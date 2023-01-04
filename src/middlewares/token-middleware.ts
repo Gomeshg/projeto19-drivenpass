@@ -27,8 +27,6 @@ export default async function authToken(
       if (isValidToken) {
         res.locals.userId = thereIsToken.userId;
         next();
-      } else {
-        return res.sendStatus(status.UNAUTHORIZED);
       }
     } else {
       return res.sendStatus(status.UNAUTHORIZED);

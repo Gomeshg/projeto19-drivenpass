@@ -12,14 +12,11 @@ async function signUp(req: Request, res: Response) {
     await userService.insertUser(newUser);
     return res.status(status.CREATED).send("User created sucessfully");
   } catch (error) {
-    switch (error.name) {
-      case "ConflictError":
-        return res.status(status.CONFLICT).send(error.message);
-        break;
-
-      default:
-        return res.sendStatus(status.INTERNAL_SERVER_ERROR);
+    if (error.name === "ConflictError") {
+      return res.status(status.CONFLICT).send(error.message);
     }
+
+    return res.sendStatus(status.INTERNAL_SERVER_ERROR);
   }
 }
 
@@ -33,26 +30,11 @@ async function signIn(req: Request, res: Response) {
       .status(status.OK)
       .send({ feedback: "Login efetuado com sucesso!", token: session.token });
   } catch (error) {
-    switch (error.name) {
-      case "UnauthorizedError":
-        return res.status(status.UNAUTHORIZED).send(error.message);
-        break;
-      default:
-        return res.sendStatus(status.INTERNAL_SERVER_ERROR);
+    if (error.name === "UnauthorizedError") {
+      return res.status(status.UNAUTHORIZED).send(error.message);
     }
+    return res.sendStatus(status.INTERNAL_SERVER_ERROR);
   }
 }
 
 export { signUp, signIn };
-
-// case status["400_NAME"]:
-//   return res.status(status.BAD_REQUEST).send(error.message);
-//   break;
-
-// case status["401_NAME"]:
-//   return res.status(status.UNAUTHORIZED).send(error.message);
-//   break;
-
-// case status["404_NAME"]:
-//   return res.status(status.NOT_FOUND).send(error.message);
-//   break;

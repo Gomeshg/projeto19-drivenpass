@@ -6,6 +6,5 @@
 import { conflictError } from "./conflict";
 import { notFoundError } from "./not-found";
 import { unauthorizedError } from "./unauthorizated";
-import { badRequestError } from "./bad-request";
 
-export { conflictError, notFoundError, unauthorizedError, badRequestError };
+export { conflictError, notFoundError, unauthorizedError };

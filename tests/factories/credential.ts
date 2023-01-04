@@ -25,11 +25,3 @@ export function createSpecificCredential(
     data: credential,
   });
 }
-
-export function getCredential(userId: number) {
-  return prisma.credential.findMany({
-    where: {
-      userId: userId,
-    },
-  });
-}

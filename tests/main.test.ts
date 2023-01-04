@@ -16,7 +16,6 @@ import createSession from "./factories/session";
 import {
   createCredential,
   createSpecificCredential,
-  getCredential,
 } from "./factories/credential";
 import { createNetwork } from "../tests/factories/network";
 import jwt from "jsonwebtoken";
@@ -157,9 +156,7 @@ describe("POST / credential", () => {
 
   it("Test case: 400 | invalid properties", async () => {
     const createdUser = await createUser(EMAIL, PASSWORD);
-    const token = jwt.sign({ userId: createdUser.id }, secretKey, {
-      expiresIn: fourHours,
-    });
+    const token = createToken(createdUser.id, fourHours);
     const session = await createSession(createdUser.id, token);
 
     const newCredential = {
@@ -661,6 +658,50 @@ describe("UPDATE /credential", () => {
       .put(`/credential/abc`)
       .set("Authorization", `Bearer ${session.token}`)
       .send({});
+
+    expect(result.status).toBe(status.BAD_REQUEST);
+  });
+
+  it("Test case 400 | invalid properties", async () => {
+    const createdUser = await createUser(EMAIL, PASSWORD);
+    const token = createToken(createdUser.id, fourHours);
+    const session = await createSession(createdUser.id, token);
+
+    const credential: CredentialType = await createCredential(createdUser.id);
+
+    const newCredential = {
+      titulo: "errado",
+      urlinda: "https://beta.openai.com/playground",
+      nome: "nome",
+      senha: "errada",
+    };
+
+    const result = await api
+      .put(`/credential/${credential.id}`)
+      .set("Authorization", `Bearer ${session.token}`)
+      .send(newCredential);
+
+    expect(result.status).toBe(status.BAD_REQUEST);
+  });
+
+  it("Test case 400 | invalid types of values", async () => {
+    const createdUser = await createUser(EMAIL, PASSWORD);
+    const token = createToken(createdUser.id, fourHours);
+    const session = await createSession(createdUser.id, token);
+
+    const credential: CredentialType = await createCredential(createdUser.id);
+
+    const newCredential = {
+      title: 123,
+      url: null,
+      username: true,
+      password: undefined,
+    };
+
+    const result = await api
+      .put(`/credential/${credential.id}`)
+      .set("Authorization", `Bearer ${session.token}`)
+      .send(newCredential);
 
     expect(result.status).toBe(status.BAD_REQUEST);
   });

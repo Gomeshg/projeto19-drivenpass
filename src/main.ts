@@ -5,7 +5,6 @@ import dotenv from "dotenv";
 // import router from "./router/index-router.js";
 import prisma from "./database/database";
 import router from "./router/index-router";
-import networkRepository from "./repository/network-repository";
 
 dotenv.config();
 
@@ -13,10 +12,8 @@ const server: Express = express();
 
 server.use(cors()).use(json()).use(router);
 
-try {
-  server.listen({ host: "localhost", port: process.env.PORT });
-} catch (err) {
-  console.log("Xabu");
-}
+server.listen(process.env.PORT, () => {
+  console.log("Servidor rodando com sucesso!");
+});
 
 export default server;
