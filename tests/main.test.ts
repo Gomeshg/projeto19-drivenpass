@@ -1156,6 +1156,49 @@ describe("UPDATE /network", () => {
     expect(result.status).toBe(status.BAD_REQUEST);
   });
 
+  it("Test case 400 | invalid properties", async () => {
+    const createdUser = await createUser(EMAIL, PASSWORD);
+    const token = createToken(createdUser.id, fourHours);
+    const session = await createSession(createdUser.id, token);
+
+    const network: NetworkType = await createNetwork(createdUser.id);
+
+    const newNetwork = {
+      titulo: "errado",
+      urlinda: "https://beta.openai.com/playground",
+      nome: "nome",
+      senha: "errada",
+    };
+
+    const result = await api
+      .put(`/network/${network.id}`)
+      .set("Authorization", `Bearer ${session.token}`)
+      .send(newNetwork);
+
+    expect(result.status).toBe(status.BAD_REQUEST);
+  });
+
+  it("Test case 400 | invalid types of values", async () => {
+    const createdUser = await createUser(EMAIL, PASSWORD);
+    const token = createToken(createdUser.id, fourHours);
+    const session = await createSession(createdUser.id, token);
+
+    const network: NetworkType = await createNetwork(createdUser.id);
+
+    const newNetwork = {
+      title: 123,
+      network: 123,
+      password: undefined,
+    };
+
+    const result = await api
+      .put(`/network/${network.id}`)
+      .set("Authorization", `Bearer ${session.token}`)
+      .send(newNetwork);
+
+    expect(result.status).toBe(status.BAD_REQUEST);
+  });
+
   it("Test case 404 | non-existent network", async () => {
     const createdUser = await createUser(EMAIL, PASSWORD);
     const token = createToken(createdUser.id, fourHours);
