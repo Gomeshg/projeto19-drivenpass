@@ -7,10 +7,10 @@ const networkSchema = joi.object({
   userId: joi.number().integer().required(),
 });
 
-const networkUpdatedSchema = joi.object({
+const networkUpdateSchema = joi.object({
   title: joi.string(),
   network: joi.string(),
   password: joi.string(),
 });
 
-export { networkSchema, networkUpdatedSchema };
+export { networkSchema, networkUpdateSchema };

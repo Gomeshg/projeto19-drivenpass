@@ -9,6 +9,8 @@ import { Router } from "express";
 // import authToken from "../middlewares/token-middleware.js";
 // import validateID from "../middlewares/id-middleware.js";
 // import validateNetwork from "../middlewares/post-network-middleware.js";
+// import validateUpdateNetwork from "../middlewares/update-network-middleware.js";
+
 import {
   getAllNetworks,
   getOneNetwork,
@@ -19,6 +21,7 @@ import {
 import authToken from "../middlewares/token-middleware";
 import validateID from "../middlewares/id-middleware";
 import validateNetwork from "../middlewares/post-network-middleware";
+import validateUpdateNetwork from "../middlewares/update-network-middleware";
 
 const networkRouter = Router();
 
@@ -26,6 +29,12 @@ networkRouter.get("/network", authToken, getAllNetworks);
 networkRouter.get("/network/:id", authToken, validateID, getOneNetwork);
 networkRouter.post("/network", authToken, validateNetwork, postNetwork);
 networkRouter.delete("/network/:id", authToken, validateID, deleteNetwork);
-networkRouter.put("/network/:id", authToken, validateID, updateNetwork);
+networkRouter.put(
+  "/network/:id",
+  authToken,
+  validateID,
+  validateUpdateNetwork,
+  updateNetwork
+);
 
 export default networkRouter;
